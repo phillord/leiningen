@@ -66,10 +66,10 @@
   "Load profiles.clj from dir if present. Tags all profiles with its origin."
   (memoize
    (fn [dir]
-       (if-let [contents (utils/read-file (io/file dir "profiles.clj"))]
-         (utils/map-vals contents vary-meta merge
+     (println "load-profiles" dir)
+     (if-let [contents (utils/read-file (io/file dir "profiles.clj"))]
+       (utils/map-vals contents vary-meta merge
                          {:origin (str (io/file dir "profiles.clj"))})))))
-
 
 (def profiles
   "Load profiles.clj from your Leiningen home and profiles.d if present."
@@ -86,6 +86,21 @@
          (merge-with error-fn
                      (load-profiles (leiningen-home))
                      (into {} (profiles-d-profiles))))))))
+
+(def command-profiles-loc
+  (io/file (System/getProperty "user.home") "scratch" "lein-command"))
+
+(def command-profiles
+  "Load profiles.clj from location set on the command line."
+  (memoize
+   (fn []
+     (println "Hello here I am 3")
+     (if (and (.exists command-profiles-loc)
+              (.canRead command-profiles-loc))
+       (do (println "About to load-profile")
+           (let [rtn (load-profiles command-profiles-loc)]
+             (println "profile is:" rtn ":")
+             rtn))))))
 
 (defn gpg-program
   "Lookup the gpg program to use, defaulting to 'gpg'"

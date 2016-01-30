@@ -656,11 +656,13 @@
   ;;   dependency, defer it to 3.0. Although I guess we don't need this
   ;;   functionality for 3.0 if we're smart.
   (let [sys-profiles (setup-map-of-profiles (system-profiles))
+        command-profiles (setup-map-of-profiles (user/command-profiles))
         user-profiles (setup-map-of-profiles (user/profiles))
         proj-profiles-file (setup-map-of-profiles (project-profiles project))]
     (warn-user-repos (concat user-profiles sys-profiles))
     (warn-user-profile (:root project) (:profiles project))
-    (merge @default-profiles sys-profiles user-profiles
+    (merge @default-profiles sys-profiles
+           command-profiles user-profiles
            (:profiles project) proj-profiles-file)))
 
 (defn- scope-plugin-profile [local-name plugin-name]
